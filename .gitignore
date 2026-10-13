@@ -1,0 +1,20 @@
+# secrets and state never belong here (see README: "How this repo is organised")
+var/
+**/var/
+*.sqlite3
+*.sqlite3-*
+*.db
+*.pem
+*.key
+id_*
+env
+*.env
+.env*
+credentials*
+caddy-users
+agent-setup.txt
+*.log
+# noise
+__pycache__/
+*.pyc
+node_modules/

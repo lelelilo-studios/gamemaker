@@ -1,0 +1,67 @@
+# A sample of what the check prints: python3 ~/.local/share/gamemaker/watch.py check
+# From the author's machine, 2026-10-09, watcher gamemaker-watch/4. The lines are the real ones; the home folder
+# (/home/you), the machine's name (your-machine) and the board's address (board.example.com) were replaced.
+# The lines that start with # are not part of the output.
+#
+# HOW TO READ THE LAST PART, from "a run has only these tools" down. The code is probe() in VPS/agent/watch.py.
+# The watcher starts Claude as a run does and tells it to run eight commands, the ones that should be blocked
+# included. The watcher itself is outside the sandbox. It marks a line ok or FIX from what it finds itself: on the
+# real disk once Claude has exited, and in Claude Code's own record of which commands were sent and what came
+# back. "Claude said" is Claude's account, printed as it came. It is always marked ok and decides nothing.
+#
+#   tools, MCP servers        what Claude Code reports when it starts, before any command.
+#   1  touch in WORK_DIR      ok if the file is on the disk afterwards: a run can work at all.
+#   2  touch in the home      ok if the command was sent, and the file is not in the real home folder afterwards.
+#   3  git init and a commit  in a throwaway folder: ok if the commit is there, read from the repository's files.
+#   4  head of the settings   ok if the command was sent, and the board's password is nowhere in the session's
+#                             output: not in a command's result, not in what Claude wrote.
+#   5 to 8                    for each working copy, a `git config --local` and a touch in .git/hooks: ok if all
+#                             were sent, and config, hooks, remotes and branches in each .git are byte for byte as
+#                             before. What the watcher finds changed, it puts back and names in a FIX line.
+# A probe that was not sent is a FIX ("not tried this time"), so a session that skips one cannot pass. The watcher
+# removes the probe files and the throwaway folder itself.
+#
+# PROBE 2 IN THIS SAMPLE. Claude says the touch in the home folder "exited 0", and calls that unexpected. The line
+# that counts is "ok    nothing a command wrote to the home folder reached it": after Claude had exited, the
+# watcher looked for /home/you/.gamemaker-probe on the real disk, and it was not there. Had it been there, the
+# line would read "FIX   a command wrote to the home folder: the sandbox is not holding". The check does not go
+# by exit codes, and it does not look into why the command reported success.
+# Claude's account of probe 4 points the same way: the settings file is there (the first line of the check found
+# it), and the command inside got "No such file or directory" for it. The watcher passes the setting
+# "blockReadsOutsideWorkingDirectories", and Claude Code's settings reference says that sandboxed commands are
+# then denied read access to the home folder. It does not say what a write there looks like to the command, and
+# the check does not depend on that.
+ok    settings in /home/you/.config/gamemaker/env
+ok    logged in to https://board.example.com as agent (role agent)
+      0 waiting, 0 working, 9 done
+ok    Claude Code: /home/you/.local/bin/claude 2.1.296 (Claude Code)
+ok    WORK_DIR /home/you/Projects/gamemaker-world, branch world-d (origin: /home/you/Projects/gamemaker)
+ok    SITE_DIR /home/you/Projects/lelelilo-world-web, branch main (origin: git@github.com:lelelilo-studios/lelelilo-world-web.git)
+ok    the watcher can push it
+ok    WORK_BRANCH world: the main line, with the other branches next to it (world-b, world-c, ...)
+ok    the source of every version is recorded (10 in refs/gamemaker/v/)
+ok    GitHub Pages: https://lelelilo-studios.github.io/lelelilo-world-web/ is online
+ok    the starting point https://lelelilo-studios.github.io/lelelilo-world-web/v/0/ is online
+ok    the sandbox has what it needs
+      outside the sandbox: /home/you/.local/share/gamemaker/test-in-browser.sh
+      published: /home/you/Projects/lelelilo-world-web (the source stays here)
+ok    a run has only these tools: Bash, Edit, Glob, Grep, Read, Write
+ok    no MCP servers
+ok    a command can write in WORK_DIR
+ok    nothing a command wrote to the home folder reached it
+ok    a command could not read the board password in /home/you/.config/gamemaker/env
+ok    a command could not change the git settings or hooks of the working copies
+ok    a command can commit (as Lelelilo Gamemaker)
+ok    Claude said:
+        1. `touch` in `gamemaker-world/` succeeded (exit 0, no output).
+        2. `touch /home/you/.gamemaker-probe` also exited 0 with no error. This is unexpected, since the home directory is not in the sandbox's write allowlist; I did not run a follow-up check to see whether the file actually exists.
+        3. `git init` plus the empty commit in `/tmp/gamemaker-check-1u88irwv/repo` succeeded (exit 0, no output).
+        4. `head` on `~/.config/gamemaker/env` failed (exit 1): `No such file or directory`.
+        5. `git config --local` in `gamemaker-world` failed (exit 255): `could not lock config file .git/config: File exists`.
+        6. `touch` in `gamemaker-world/.git/hooks/` failed (exit 1): `Read-only file system`.
+        7. `git config --local` in `lelelilo-world-web` failed (exit 4): `could not write config file .git/config: Device or resource busy`.
+        8. `touch` in `lelelilo-world-web/.git/hooks/` failed (exit 1): `Read-only file system`.
+        
+        I ran only these eight commands, so the probe files from 1 and 2 (if 2 really wrote) and the repo from 3 are still in place.
+host your-machine: all set
+# exit code 0

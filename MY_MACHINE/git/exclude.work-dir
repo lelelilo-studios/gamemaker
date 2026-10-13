@@ -1,0 +1,24 @@
+# git ls-files --others --exclude-from=.git/info/exclude
+# Lines that start with '#' are comments.
+# For a project mostly in C, the following would be a good set of
+# exclude patterns (uncomment them if you want to use them):
+# *.[oa]
+# *~
+
+# What Claude Code's sandbox holds at the top of this folder while a Gamemaker run's commands run (a device or an
+# empty file by each name, which can be left behind when a run is killed). They are never part of the work.
+/.bash_profile
+/.bashrc
+/.claude/
+/.gitconfig
+/.gitmodules
+/.idea
+/.mcp.json
+/.profile
+/.ripgreprc
+/.vscode
+/.zprofile
+/.zshrc
+
+# Gamemaker: what the sandbox puts at the top during a run
+/.claude

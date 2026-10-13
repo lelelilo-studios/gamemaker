@@ -1,0 +1,7 @@
+[Unit]
+Description=Gamemaker watcher: run the prompts waiting on board.example.com
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/env python3 %h/.local/share/gamemaker/watch.py run
+TimeoutStartSec=infinity

@@ -1,0 +1,36 @@
+# board.example.com: the prompt board (server.py, a user service on 127.0.0.1:8090)
+# Put your board's own name in place of board.example.com on the first line of the block, and your own addresses
+# in the list under it: the three here are documentation examples, not real ones.
+# Only these IPs get in. To change them, edit the list here and run `sudo bash deploy/setup-caddy.sh` again.
+board.example.com {
+	@outside not remote_ip 203.0.113.10 203.0.113.11 198.51.100.7
+	handle @outside {
+		header Content-Type "text/plain; charset=utf-8"
+		respond "This sketchbook is private. (Your IP: {remote_host})" 403
+	}
+
+	handle {
+		request_body {
+			max_size 64KB
+		}
+		# the logins: filled in from var/caddy-users by setup-caddy.sh
+		basic_auth bcrypt "Lelelilo Gamemaker" {
+			{{USERS}}
+		}
+		encode zstd gzip
+		header {
+			X-Content-Type-Options nosniff
+			Referrer-Policy no-referrer
+			X-Robots-Tag "noindex, nofollow"
+			Strict-Transport-Security "max-age=31536000"
+			Permissions-Policy "camera=(), microphone=(), geolocation=()"
+			# results are pages on GitHub Pages, shown in a frame
+			Content-Security-Policy "default-src 'self'; img-src 'self' data:; frame-src https://*.github.io; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"
+		}
+		reverse_proxy 127.0.0.1:8090 {
+			# the board trusts this header to know who is asking: it is always set here, never taken from the client
+			header_up X-Gamemaker-User {http.auth.user.id}
+			header_up -Authorization
+		}
+	}
+}

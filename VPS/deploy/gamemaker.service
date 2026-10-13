@@ -1,0 +1,19 @@
+[Unit]
+Description=Gamemaker prompt board (board.example.com, behind Caddy)
+After=network-online.target
+
+[Service]
+# Set for your install: the folder server.py is in (both paths: here the board runs from a copy of this
+# repository's VPS/ folder in ~/Projects/gamemaker), the board's own address (--origin and --push-subject), and
+# your game's GitHub Pages address (--game-url).
+WorkingDirectory=%h/Projects/gamemaker
+ExecStart=/usr/bin/python3 %h/Projects/gamemaker/server.py --host 127.0.0.1 --port 8090 --origin https://board.example.com --push-subject https://board.example.com --game-url https://your-name.github.io/your-game/
+Environment=PYTHONUNBUFFERED=1
+Restart=on-failure
+RestartSec=5
+MemoryMax=200M
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target

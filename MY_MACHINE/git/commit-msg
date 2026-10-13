@@ -1,0 +1,6 @@
+#!/bin/sh
+# Gamemaker: a commit here is the game's, by whoever the watcher commits as, and by nobody else. Claude Code adds
+# lines that credit itself as an author to the commits it makes: they are taken out of the message here.
+sed -i -E '/^[[:space:]]*co-authored-by:/Id; /generated with \[?claude code/Id' "$1"
+# (and the empty lines that leaves at the end)
+sed -i -e :a -e '/^\n*$/{$d;N;ba' -e '}' "$1"
