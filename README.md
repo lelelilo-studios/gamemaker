@@ -6,9 +6,10 @@ to GitHub Pages and reports back to the page.
 
 ## Demo
 
-[![Watch the two-minute tour](docs/demo-preview.webp)](docs/demo.mp4)
+[![Watch the two-minute tour](docs/demo-preview.webp)](docs/demo.mp4?raw=true)
 
-A tour of one request, from the board to a playable version (MP4, with captions).
+A tour of one request, from the board to a playable version. The picture is a short preview: click it for the
+full video with captions (MP4, 9 MB; GitHub hands it over as a download).
 
 ## How it works
 
